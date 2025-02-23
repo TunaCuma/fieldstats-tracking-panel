@@ -148,13 +148,13 @@ export default function HomeScreen(): ReactElement {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-8">Tuna Project Manager</h1>
+      <h1 className="text-2xl font-bold mb-8">Open a Project</h1>
 
       {errorMessage && (
         <div className="mb-4 text-red-500 text-sm">{errorMessage}</div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-4 flex flex-col">
         <button
           type="button"
           onClick={handleImportProject}
