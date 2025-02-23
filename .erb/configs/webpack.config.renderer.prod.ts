@@ -31,9 +31,7 @@ const configuration: webpack.Configuration = {
     path: webpackPaths.distRendererPath,
     publicPath: './',
     filename: 'renderer.js',
-    library: {
-      type: 'umd',
-    },
+    library: { type: 'umd' },
   },
 
   module: {
@@ -44,10 +42,14 @@ const configuration: webpack.Configuration = {
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
+            options: { modules: true, sourceMap: true, importLoaders: 1 },
+          },
+          {
+            loader: 'postcss-loader',
             options: {
-              modules: true,
-              sourceMap: true,
-              importLoaders: 1,
+              postcssOptions: {
+                plugins: [require('tailwindcss'), require('autoprefixer')],
+              },
             },
           },
           'sass-loader',
@@ -56,19 +58,25 @@ const configuration: webpack.Configuration = {
       },
       {
         test: /\.s?(a|c)ss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('tailwindcss'), require('autoprefixer')],
+              },
+            },
+          },
+          'sass-loader',
+        ],
         exclude: /\.module\.s?(c|a)ss$/,
       },
       // Fonts
-      {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i,
-        type: 'asset/resource',
-      },
+      { test: /\.(woff|woff2|eot|ttf|otf)$/i, type: 'asset/resource' },
       // Images
-      {
-        test: /\.(png|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
-      },
+      { test: /\.(png|jpg|jpeg|gif)$/i, type: 'asset/resource' },
       // SVG
       {
         test: /\.svg$/,
@@ -78,9 +86,7 @@ const configuration: webpack.Configuration = {
             options: {
               prettier: false,
               svgo: false,
-              svgoConfig: {
-                plugins: [{ removeViewBox: false }],
-              },
+              svgoConfig: { plugins: [{ removeViewBox: false }] },
               titleProp: true,
               ref: true,
             },
@@ -111,9 +117,7 @@ const configuration: webpack.Configuration = {
       DEBUG_PROD: false,
     }),
 
-    new MiniCssExtractPlugin({
-      filename: 'style.css',
-    }),
+    new MiniCssExtractPlugin({ filename: 'style.css' }),
 
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
@@ -132,9 +136,7 @@ const configuration: webpack.Configuration = {
       isDevelopment: false,
     }),
 
-    new webpack.DefinePlugin({
-      'process.type': '"renderer"',
-    }),
+    new webpack.DefinePlugin({ 'process.type': '"renderer"' }),
   ],
 };
 
