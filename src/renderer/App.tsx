@@ -1,6 +1,6 @@
 // src/renderer/App.tsx
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import { HomeScreen } from './components/HomeScreen';
+import HomeScreen from './components/HomeScreen';
 import { MainUI } from './components/MainUI';
 import './styles/global.css';
 

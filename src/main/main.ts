@@ -1,17 +1,9 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
-
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import fs from 'fs/promises';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -24,6 +16,34 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+// Add IPC handlers for file operations
+function setupIpcHandlers() {
+  // File dialogs
+  ipcMain.handle('show-save-dialog', async (_, options) => {
+    const window = mainWindow;
+    if (!window) throw new Error('Main window is not available');
+    return dialog.showSaveDialog(window, options);
+  });
+
+  ipcMain.handle('show-open-dialog', async (_, options) => {
+    const window = mainWindow;
+    if (!window) throw new Error('Main window is not available');
+    return dialog.showOpenDialog(window, options);
+  });
+
+  // File system operations
+  ipcMain.handle('read-file', async (_, filePath: string) => {
+    return fs.readFile(filePath);
+  });
+
+  ipcMain.handle(
+    'write-file',
+    async (_, { filePath, data }: { filePath: string; data: Buffer }) => {
+      await fs.writeFile(filePath, data);
+    },
+  );
+}
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -47,7 +67,6 @@ const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
   const extensions = ['REACT_DEVELOPER_TOOLS'];
-
   return installer
     .default(
       extensions.map((name) => installer[name]),
@@ -115,7 +134,6 @@ const createWindow = async () => {
 /**
  * Add event listeners...
  */
-
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
@@ -127,6 +145,7 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    setupIpcHandlers(); // Add IPC handlers before creating window
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
