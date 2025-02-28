@@ -27,3 +27,11 @@ npm-debug.log.*
 *.css.d.ts
 *.sass.d.ts
 *.scss.d.ts
+
+
+venv
+**/__pycache__/
+/tracking/bos5.mp4
+/tracking/radon.json
+/tracking/team_colors2.json
+/tracking/yolo.json
