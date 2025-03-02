@@ -38,7 +38,7 @@ pip install -r requirements.txt
 - **Frame**: A single image from a video sequence
 - **Detection**: An object detected in a frame (with bounding box/center coordinates)
 - **Track**: A detected object that is tracked across multiple frames with a consistent ID
-- **Chunk**: A sequence of frames processed together (default: 1800 frames)
+- **Chunk**: A sequence of frames processed together (default: 1800 frames for 30 seconds)
 
 ## Using the Tracker API
 
